@@ -1,6 +1,8 @@
-const Product = require('../models/Product');
-const Order = require('../models/Order');
-const User = require('../models/User');
+var db = require('../../models');
+
+const User = db.user;
+const Order = db.order;
+const Product = db.product;
 
 
 
@@ -10,17 +12,20 @@ exports.allProducts = async(req,res)=>{
 
         const products = await Product.findAll({});
 
-        res.status(200).json({
+       return{
             message: "All products",
             success: true,
-            products
-        })
+            data:{products},
+            status: HTTP_STATUS.OK
+       }
         
     } catch (error) {
-        res.status(500).json({
+        return{
             message: error.message,
-            success: false
-        })
+            success: false,
+            data:{},
+            status: HTTP_STATUS.BAD_REQUEST
+       }
     }
 }
 
@@ -43,18 +48,21 @@ exports.addProduct = async(req,res)=>{
         const newProduct = await Product.create(newProductData);
 
 
-        res.status(201).json({
+       return{
             message: "Product added successfully",
             success: true,
-            newProduct
-        })
+            data:{newProduct},
+            status: HTTP_STATUS.CREATED
+       }
         
         
     } catch (error) {
-        res.status(200).json({
+        return{
             message: error.message,
-            success: false
-        })
+            success: false,
+            data:{},
+            status: HTTP_STATUS.BAD_REQUEST
+       }
     }
 }
 
@@ -63,10 +71,12 @@ exports.addExistingProduct = async(req,res)=>{
 
         const product = await Product.findOne({where:{product_id:req.params.id}});
         if(!product){
-            return res.status(404).json({
+            return{
                 message: "Product not found",
-                success: false
-            })
+                success: false,
+                data:{},
+                status: HTTP_STATUS.BAD_REQUEST
+            }
         }
 
         const quantity = req.body.quantity;
@@ -74,18 +84,21 @@ exports.addExistingProduct = async(req,res)=>{
         product.available = (product.available + quantity);
         await product.save();
 
-        res.status(201).json({
-            message: "Product availablity updated successfully",
+        return{
+            message: "Product added successfully",
             success: true,
-            product
-        })
+            data:{product},
+            status: HTTP_STATUS.CREATED
+        }
         
         
     } catch (error) {
-        res.status(200).json({
+        return{
             message: error.message,
-            success: false
-        })
+            success: false,
+            data:{},
+            status: HTTP_STATUS.BAD_REQUEST
+        }
     }
 }
 
@@ -99,24 +112,30 @@ exports.buyProduct = async(req,res)=>{
        
         const product = await Product.findOne({_id:req.params.id});
         if(!product){
-            return res.status(404).json({
+            return{
                 message: "Product not found",
-                success: false
-            })
+                success: false,
+                data:{},
+                status: HTTP_STATUS.BAD_REQUEST
+            }
         }
 
         if(product.available === 0){
-            return res.status(404).json({
-                message: "Product not available",
-                success: false
-            })
+            return{
+                message: "Product is out of stock",
+                success: false,
+                data:{},
+                status: HTTP_STATUS.BAD_REQUEST
+            }
         }
 
         if(product.available < quantity){
-            return res.status(404).json({
-                message: `Only ${product.available} available`,
-                success: false
-            })
+            return{
+                message: "Product is out of stock",
+                success: false,
+                data:{},
+                status: HTTP_STATUS.BAD_REQUEST
+            }
         }     
 
          const newOrderData = {
@@ -133,15 +152,19 @@ exports.buyProduct = async(req,res)=>{
 
         await product.save();
 
-        res.status(201).json({
+        return{
             message: "Product bought successfully",
             success: true,
-        })
+            data:{order},
+            status: HTTP_STATUS.CREATED
+        }
         
     } catch (error) {
-        res.status(200).json({
+        return{
             message: error.message,
-            success: false
-        })
+            success: false,
+            data:{},
+            status: HTTP_STATUS.BAD_REQUEST
+        }
     }
 }

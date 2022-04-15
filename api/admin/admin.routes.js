@@ -2,9 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 
-const {isAuthenticated, isAdmin} = require('../middleware/auth');
+const {isAuthenticated, isAdmin} = require('./validation');
 
-const {addAdmin} = require('../controllers/admin');
+const {addAdmin} = require('./admin.controller');
 
 router.route("/add/admin/:id").post(isAuthenticated, isAdmin, addAdmin);
 

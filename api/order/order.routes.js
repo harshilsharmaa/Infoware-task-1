@@ -1,7 +1,7 @@
 const express = require('express');
-const { isAdmin, isAuthenticated } = require('../middleware/auth');
+const { isAdmin, isAuthenticated } = require('../admin/validation');
 
-const {allOrders, orderById, orderByUserId, myOrders} = require('../controllers/order');
+const {allOrders, orderById, orderByUserId, myOrders} = require('./order.controller');
 
 const router = express.Router();
 

@@ -1,7 +1,7 @@
 const express = require("express")
 
-const {isAuthenticated} = require("../middleware/auth")
-const {register, login, logout, updateProfile, myProfile,deleteProfile} = require("../controllers/user");
+const {isAuthenticated} = require("./validation")
+const {register, login, logout, updateProfile, myProfile,deleteProfile} = require("./user.controller");
 
 const router = express.Router();
 

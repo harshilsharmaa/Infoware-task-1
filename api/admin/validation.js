@@ -1,5 +1,26 @@
-const User = require('../models/User');
+const User = require('../../models/User.model');
 const jwt = require('jsonwebtoken');
+
+
+exports.isAdmin = async(req,res,next)=>{
+    try{
+
+        if(req.user.admin){
+            next();
+        }else{
+            return res.status(401).json({
+                message: "You are not an admin",
+                success: false
+            })
+        }
+    }
+    catch(error){
+        res.status(500).json({
+            message: error.message,
+            success: false
+        })
+    }
+}
 
 exports.isAuthenticated = async(req,res,next)=>{
     try {
@@ -26,22 +47,3 @@ exports.isAuthenticated = async(req,res,next)=>{
     }
 }
 
-exports.isAdmin = async(req,res,next)=>{
-    try{
-
-        if(req.user.admin){
-            next();
-        }else{
-            return res.status(401).json({
-                message: "You are not an admin",
-                success: false
-            })
-        }
-    }
-    catch(error){
-        res.status(500).json({
-            message: error.message,
-            success: false
-        })
-    }
-}

@@ -1,6 +1,10 @@
-const User = require('../models/User');
+var db = require('../../models');
+
+const User = db.user;
+const Order = db.order;
+const Product = db.product;
 const jwt = require('jsonwebtoken');
-const Order = require('../models/Order');
+
 
 exports.register = async(req, res)=>{
 
@@ -10,9 +14,12 @@ exports.register = async(req, res)=>{
 
         const user = await User.findOne({where:{email}});
         if(user){
-            return res.status(400).json({
-                message: "User already exists"
-            });
+            return {
+                message: "User already exists",
+                status: HTTP_STATUS.BAD_REQUEST,
+                success: false,
+                data : {}
+            }
         }
 
         const userData = {
@@ -26,18 +33,22 @@ exports.register = async(req, res)=>{
 
         const token = jwt.sign({_id: newUser.user_id}, process.env.JWT_SECRET, {expiresIn: '7d'});
 
-        res.cookie('token', token, {}).status(201).json({
-            message: "User registered successfully",
-            success: true,
-            newUser
-        });
+        res.cookie('token', token, {});
 
+        return {
+            message: "User created successfully",
+            status: HTTP_STATUS.CREATED,
+            success: true,
+            data : {newUser}
+        }
         
     } catch (error) {
-        res.status(500).json({
-            message: error.message,
-            success: false
-        })
+        return {
+            message: "Not Found",
+            status: HTTP_STATUS.BAD_REQUEST,
+            success: false,
+            data : {}
+        }
     }
 
 }
@@ -59,28 +70,35 @@ exports.login = async(req, res)=>{
         }
 
         if(!isMatch){
-            return res.status(400).json({
-                message: "Invalid credentials"
-            });
+            return {
+                message: "Invalid credentials",
+                status: HTTP_STATUS.BAD_REQUEST,
+                success: false,
+                data : {}
+            }
         }
 
 
         const token = jwt.sign({_id: newUser.user_id}, process.env.JWT_SECRET, {expiresIn: '7d'});
 
 
-        res.cookie('token', token, {}).status(200).json({
-            message: "User logged in successfully",
+        res.cookie('token', token, {});
+
+        return {
+            message: "User loggedin successfully",
+            status: HTTP_STATUS.OK,
             success: true,
-            token,
-            newUser
-        })
+            data : {newUser}
+        }
 
 
     } catch (error) {
-        res.status(500).json({
-            message: error.message,
-            success: false
-        })
+        return {
+            message: "Not Found",
+            status: HTTP_STATUS.BAD_REQUEST,
+            success: false,
+            data : {}
+        }
     }
 }
 
@@ -93,17 +111,20 @@ exports.myProfile = async(req,res)=>{
             }]
         });
 
-        res.status(200).json({
-            message: "My profile",
+        return {
+            message: "Profile",
+            status: HTTP_STATUS.OK,
             success: true,
-            user
-        });
+            data : {user}
+        }
         
     } catch (error) {
-        res.status(500).json({
-            message: error.message,
-            success: false
-        })
+        return {
+            message: "NOT FOUND",
+            status: HTTP_STATUS.BAD_REQUEST,
+            success: false,
+            data : {}
+        }
     }
 }
 
@@ -121,17 +142,20 @@ exports.updateProfile = async(req,res)=>{
 
         await user.save();
 
-        res.status(200).json({
-            message: "User updated successfully",
+        return {
+            message: "Profile updated successfully",
+            status: HTTP_STATUS.OK,
             success: true,
-            user
-        });
+            data : {user}
+        }
 
     } catch (error) {
-        res.status(500).json({
-            message: error.message,
-            success: false
-        })
+        return {
+            message: "NOT FOUND",
+            status: HTTP_STATUS.BAD_REQUEST,
+            success: false,
+            data : {}
+        }
     }
 }
 
@@ -152,10 +176,12 @@ exports.deleteProfile = async(req,res)=>{
 
         
     } catch (error) {
-        res.status(500).json({
-            message: error.message,
-            success: false
-        })
+        return {
+            message: "NOT FOUND",
+            status: HTTP_STATUS.BAD_REQUEST,
+            success: false,
+            data : {}
+        }
     }
 }
 
@@ -169,9 +195,11 @@ exports.logout = async(req,res)=>{
         });
 
     } catch (error) {
-        res.status(500).json({
-            message: error.message,
-            success: false
-        })
+        return {
+            message: "NOT FOUND",
+            status: HTTP_STATUS.BAD_REQUEST,
+            success: false,
+            data : {}
+        }
     }
 }

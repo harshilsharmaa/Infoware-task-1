@@ -1,33 +1,36 @@
-const Sequelize = require('sequelize');
-const sequelize = require('../config/database');
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
+
+
+module.exports = (sequelize,DataTypes)=>{
 
     const Order = sequelize.define('order', {
         user_id:{
-            type: Sequelize.INTEGER,
+            type: DataTypes.INTEGER,
         },
         product_id:{
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
         },
         quantity:{
-            type: Sequelize.INTEGER,
+            type: DataTypes.INTEGER,
         },
         orderDate:{
-            type: Sequelize.DATE,
+            type: DataTypes.DATE,
             default: Date.now,
         },
         price:{
-            type: Sequelize.INTEGER,
+            type: DataTypes.INTEGER,
         },
         totalAmount:{
-            type: Sequelize.INTEGER,
+            type: DataTypes.INTEGER,
         },
         order_id:{
-            type:Sequelize.INTEGER,
+            type:DataTypes.INTEGER,
             allowNULL: false,
             autoIncrement: true,
             primaryKey: true
         }
     })
 
-
-module.exports = Order;
+    return Order;
+}
